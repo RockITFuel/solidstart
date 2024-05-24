@@ -1,7 +1,7 @@
 import { action, redirect, reload } from "@solidjs/router";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { createPost  } from "~/lib/post/zod";
+import { createPost } from "~/lib/post/zod";
 import { db } from "~/lib/db";
 import { getUser } from "~/lib";
 import { getPosts } from "~/lib/post/posts.server";
@@ -39,8 +39,13 @@ const createPost$ = action(async (formData: FormData) => {
     console.log("error: ", error);
     return error as Error;
   }
-  throw reload();
+  // throw reload({
+  //   revalidate: getPosts.key,
+  // });
 
+  return redirect("/posts", {
+    revalidate: getPosts.key,
+  });
 }, "createPost$");
 
 export function TestForm() {

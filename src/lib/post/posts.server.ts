@@ -12,6 +12,7 @@ export const submitXX = async () => {
   const user = await getUser();
   console.log("user: ", user);
 };
+
 export const getPosts = cache(async () => {
   "use server";
   console.count("getPosts");

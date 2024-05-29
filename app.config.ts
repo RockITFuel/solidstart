@@ -3,6 +3,6 @@ import { ssr } from "solid-js/web";
 
 export default defineConfig({
   vite: {
-    ssr: { external: ["@prisma/client"] }
+    ssr: { external: ["@prisma/client"] },
   }
 });

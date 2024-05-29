@@ -1,9 +1,15 @@
-"use server";
-
 import { getUser } from "..";
 import { createPost, type CreatePost } from "./zod";
 import { db } from "../db";
-import { action, cache, redirect, reload } from "@solidjs/router";
+import {
+  RouteLoadFuncArgs,
+  action,
+  cache,
+  redirect,
+  reload,
+  useParams,
+} from "@solidjs/router";
+import z from "zod";
 
 export const submitXX = async () => {
   "use server";
@@ -13,19 +19,54 @@ export const submitXX = async () => {
   console.log("user: ", user);
 };
 
-export const getPosts = cache(async () => {
-  "use server";
-  console.count("getPosts");
-  const user = await getUser();
+const schema = z.object({
+  page: z.number(),
+  limit: z.number(),
+  search: z.string(),
+});
+export const getPosts = cache(
+  async (props: {
+    page: number;
+    limit: number;
+    search: string;
+  }) => {
+    "use server";
+    const res = schema.safeParse(props);
+    if (!res.success) {
+      return redirect("/");
+    }
+    const { page, limit, search } = res.data;
+    console.log(" res.data: ", res.data);
 
-  const posts = await db.post.findMany({
-    orderBy: { createdAt: "desc" },
-    include: { author: true },
-  });
-  console.log("last post: ", posts[0].title);
+    console.count("getPosts");
+    const user = await getUser();
 
-  return posts;
-}, "posts");
+    const posts = await db.post.findMany({
+      skip: page * limit,
+      take: limit,
+      where: {
+        OR: [
+          { title: { contains: search } },
+          { content: { contains: search } },
+        ],
+      },
+      orderBy: { createdAt: "desc" },
+      include: { author: true },
+    });
+    console.log("last post: ", posts[0].title);
+    const count = await db.post.count({
+      where: {
+        OR: [
+          { title: { contains: search } },
+          { content: { contains: search } },
+        ],
+      },
+    });
+
+    return {posts, count};
+  },
+  "posts"
+);
 
 export const submitPost = action(async (data: FormData) => {
   "use server";

@@ -1,18 +1,13 @@
-import { createForm, zodForm } from "@modular-forms/solid";
+import { createForm, getValues, zodForm } from "@modular-forms/solid";
+import { action, redirect, useAction, useSubmission } from "@solidjs/router";
+import { Show, createEffect, createSignal } from "solid-js";
 import {
-    action,
-    redirect,
-    useAction,
-    useSubmission
-} from "@solidjs/router";
-import { Show, createSignal } from "solid-js";
-import {
-    Dialog,
-    DialogCloseButton,
-    DialogContent,
-    DialogFooter,
-    DialogHeader,
-    DialogTitle
+  Dialog,
+  DialogCloseButton,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
 } from "~/components/ui/dialog";
 import { getUser } from "~/lib";
 import { db } from "~/lib/db";
@@ -21,7 +16,7 @@ import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 import { Label } from "./ui/label";
 
-export const addPost$ = action(async (formData: CreatePost) => {
+export const addPost$ = action(async (formData: Partial<CreatePost>) => {
   "use server";
 
   const data = createPost.safeParse(formData);
@@ -49,7 +44,7 @@ export const addPost$ = action(async (formData: CreatePost) => {
   return redirect("/posts");
 }, "addPost$");
 
-export function AddPostDialog() {
+export function SuperFormDialog() {
   const [open, setOpen] = createSignal(false);
   const isSaving = useSubmission(addPost$);
   const submitPost = useAction(addPost$);
@@ -59,8 +54,20 @@ export function AddPostDialog() {
       title: "",
       content: "this is a test content with a minimum of 8 characters.",
     },
+
     validate: zodForm(createPost),
   });
+
+  // createEffect(() => {
+  //   console.log("loginForm: ", loginForm);
+  //   if (loginForm.submitted) {
+  //     const x = getValues(loginForm);
+  //     // console.log("submitting", x);
+  //     // submitPost(x).then((result) => {
+  //     //   console.log("result: ", result);
+  //     // });
+  //   }
+  // });
 
   return (
     <>
@@ -72,8 +79,8 @@ export function AddPostDialog() {
         <DialogContent>
           <Form
             onSubmit={(data) => {
-              setOpen(false);
-              submitPost(data);
+              // setOpen(false);
+              // submitPost(data);
             }}
           >
             <DialogHeader>

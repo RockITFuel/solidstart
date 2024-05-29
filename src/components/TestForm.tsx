@@ -19,7 +19,7 @@ const createPost$ = action(async (formData: FormData) => {
   console.log("formData: ", formData.get("title"));
   formData.set("content", "admin x xx x  x x x x x x x x x x x ");
 
-  const data = createPost.safeParse(formDataToObject(formData));
+  const data = createPost.safeParse(Object.fromEntries(formData.entries()));
   if (data.success === false) {
     console.log("error: ", data.error.errors);
     return redirect("/posts");
@@ -42,10 +42,8 @@ const createPost$ = action(async (formData: FormData) => {
   // throw reload({
   //   revalidate: getPosts.key,
   // });
-
-  return redirect("/posts", {
-    revalidate: getPosts.key,
-  });
+  // return redirect(`/notes/${id}`);
+  return redirect("/posts");
 }, "createPost$");
 
 export function TestForm() {

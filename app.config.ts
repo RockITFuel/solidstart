@@ -4,5 +4,6 @@ import { ssr } from "solid-js/web";
 export default defineConfig({
   vite: {
     ssr: { external: ["@prisma/client"] },
-  }
+  },
+  middleware: "./src/lib/middleware.ts",
 });

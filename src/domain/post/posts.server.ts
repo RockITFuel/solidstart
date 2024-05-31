@@ -1,6 +1,6 @@
-import { getUser } from "..";
+import { getUser } from "../../lib";
 import { createPost, type CreatePost } from "./zod";
-import { db } from "../db";
+import { db } from "../../lib/db";
 import {
   RouteLoadFuncArgs,
   action,
@@ -20,16 +20,13 @@ export const submitXX = async () => {
 };
 
 const schema = z.object({
-  page: z.number(),
+  page: z.number().min(1),
   limit: z.number(),
   search: z.string(),
 });
+
 export const getPosts = cache(
-  async (props: {
-    page: number;
-    limit: number;
-    search: string;
-  }) => {
+  async (props: { page: number; limit: number; search: string }) => {
     "use server";
     const res = schema.safeParse(props);
     if (!res.success) {
@@ -42,7 +39,7 @@ export const getPosts = cache(
     const user = await getUser();
 
     const posts = await db.post.findMany({
-      skip: page * limit,
+      skip: (page - 1) * limit,
       take: limit,
       where: {
         OR: [
@@ -53,7 +50,7 @@ export const getPosts = cache(
       orderBy: { createdAt: "desc" },
       include: { author: true },
     });
-    console.log("last post: ", posts[0].title);
+    console.log("last post: ", posts[0]?.title);
     const count = await db.post.count({
       where: {
         OR: [
@@ -63,7 +60,7 @@ export const getPosts = cache(
       },
     });
 
-    return {posts, count};
+    return { posts, count };
   },
   "posts"
 );

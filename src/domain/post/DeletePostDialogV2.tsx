@@ -1,4 +1,4 @@
-import { action, redirect, useSubmission } from "@solidjs/router";
+import { Action, action, redirect, useSubmission } from "@solidjs/router";
 import {
   Dialog,
   DialogCloseButton,
@@ -16,16 +16,25 @@ import { db } from "~/lib/db";
 import { toast } from "solid-sonner";
 import { Show } from "solid-js";
 import ActionWrapper from "~/components/ActionWrapper";
+import { z } from "zod";
+import { zodValidate } from "~/lib/functions/validate";
 
-const deletePost = action(async (id: string) => {
+const schema = z.object({
+  id: z.string(),
+});
+
+type Schema = z.infer<typeof schema>;
+
+const deletePost = action(async (props: Schema) => {
   "use server";
-  // add 2 seconds delay
-  await new Promise((resolve) => setTimeout(resolve, 2000));
-  // Also functions like a guard
+  //! Guard
   const user = await getUser();
+  //! Validate
+  const data = zodValidate(schema, props);
+
   const deletedPost = await db.post.delete({
     where: {
-      id,
+      id: data.id,
     },
   });
 
@@ -41,25 +50,6 @@ const deletePost = action(async (id: string) => {
   });
 });
 
-const advancedPost = action(
-  async (
-    props: {
-      id: string;
-      name: string;
-      description: string;
-      content: string;
-    },
-    redirectTo: string
-  ) => {
-    "use server";
-
-    return redirect("/posts", {
-      statusText: "Post deleted successfully",
-      status: 200,
-    });
-  }
-);
-
 export default function DeletePostDialogV2({ postId }: { postId: string }) {
   return (
     <ActionWrapper
@@ -67,7 +57,7 @@ export default function DeletePostDialogV2({ postId }: { postId: string }) {
       onError={(e) => {
         toast.error(`${e?.message}`);
       }}
-      onSucces={() => {
+      onSuccess={() => {
         toast.success("Post deleted successfully");
       }}
     >
@@ -97,7 +87,7 @@ export default function DeletePostDialogV2({ postId }: { postId: string }) {
             <DialogFooter>
               <DialogCloseButton>
                 <Button variant="ghost">Cancel</Button>
-                <Button variant="default" onclick={() => action(postId)}>
+                <Button variant="default" onclick={() => action({id: postId})}>
                   Proceed
                 </Button>
               </DialogCloseButton>

@@ -1,6 +1,6 @@
-import { createForm, getValues, zodForm } from "@modular-forms/solid";
+import { createForm, zodForm } from "@modular-forms/solid";
 import { action, redirect, useAction, useSubmission } from "@solidjs/router";
-import { Show, createEffect, createSignal } from "solid-js";
+import { Show, createSignal } from "solid-js";
 import {
   Dialog,
   DialogCloseButton,
@@ -11,12 +11,12 @@ import {
 } from "~/components/ui/dialog";
 import { getUser } from "~/lib";
 import { db } from "~/lib/db";
-import { CreatePost, createPost } from "~/lib/post/zod";
-import { Button } from "./ui/button";
-import { Input } from "./ui/input";
-import { Label } from "./ui/label";
+import { Button } from "../../components/ui/button";
+import { Input } from "../../components/ui/input";
+import { Label } from "../../components/ui/label";
+import { CreatePost, createPost } from "./zod";
 
-export const addPost$ = action(async (formData: Partial<CreatePost>) => {
+export const addPost = action(async (formData: CreatePost) => {
   "use server";
 
   const data = createPost.safeParse(formData);
@@ -44,30 +44,18 @@ export const addPost$ = action(async (formData: Partial<CreatePost>) => {
   return redirect("/posts");
 }, "addPost$");
 
-export function SuperFormDialog() {
+export function AddPostDialog() {
   const [open, setOpen] = createSignal(false);
-  const isSaving = useSubmission(addPost$);
-  const submitPost = useAction(addPost$);
+  const isSaving = useSubmission(addPost);
+  const submitPost = useAction(addPost);
 
   const [loginForm, { Form, Field }] = createForm<CreatePost>({
     initialValues: {
       title: "",
       content: "this is a test content with a minimum of 8 characters.",
     },
-
     validate: zodForm(createPost),
   });
-
-  // createEffect(() => {
-  //   console.log("loginForm: ", loginForm);
-  //   if (loginForm.submitted) {
-  //     const x = getValues(loginForm);
-  //     // console.log("submitting", x);
-  //     // submitPost(x).then((result) => {
-  //     //   console.log("result: ", result);
-  //     // });
-  //   }
-  // });
 
   return (
     <>
@@ -79,8 +67,8 @@ export function SuperFormDialog() {
         <DialogContent>
           <Form
             onSubmit={(data) => {
-              // setOpen(false);
-              // submitPost(data);
+              setOpen(false);
+              submitPost(data);
             }}
           >
             <DialogHeader>

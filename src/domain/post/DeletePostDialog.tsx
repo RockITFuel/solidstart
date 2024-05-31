@@ -16,6 +16,8 @@ import { db } from "~/lib/db";
 import { toast } from "solid-sonner";
 import { Show } from "solid-js";
 
+// const protectedAction;
+
 const deletePost = action(async (id: string) => {
   "use server";
   // add 2 seconds delay

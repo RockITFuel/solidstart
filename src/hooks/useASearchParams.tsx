@@ -6,11 +6,7 @@ import {
 } from "@solidjs/router";
 import { Accessor, createMemo } from "solid-js";
 
-export default function useASearchParams<T extends { [key: string]: any }>({
-  init,
-}: {
-  init: (params: Partial<Params>) => T;
-}) {
+export default function useASearchParams<T extends { [key: string]: any }>(init: (params: Partial<Params>) => T) {
   const [searchParams, setSearchParams] = useSearchParams();
 
   // Set the initial search params

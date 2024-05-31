@@ -1,36 +1,40 @@
 import { action, redirect, reload } from "@solidjs/router";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
-import { createPost } from "~/lib/post/zod";
 import { db } from "~/lib/db";
 import { getUser } from "~/lib";
-import { getPosts } from "~/lib/post/posts.server";
+import { createPost } from "~/domain/post/zod";
+import ActionWrapper from "./ActionWrapper";
+import { toast } from "solid-sonner";
+import { zodValidate } from "~/lib/functions/validate";
 
-function formDataToObject(formData: FormData): { [key: string]: any } {
-  const obj: { [key: string]: any } = {};
-  formData.forEach((value, key) => {
-    obj[key] = value;
-  });
-  return obj;
-}
 
-const createPost$ = action(async (formData: FormData) => {
+
+const createPostFn = action(async (formData: FormData) => {
   "use server";
   console.log("formData: ", formData.get("title"));
   formData.set("content", "admin x xx x  x x x x x x x x x x x ");
+  // throw new Error("Post not found");
+  // try {
+  //   const data = createPost.parse(Object.fromEntries(formData.entries()));
+  // } catch (error) {
+  //   console.log("error: ", error);
+  //   throw new Error("Post not foundxx");
+  // }
+  // throw new Error("Post not found");
 
-  const data = createPost.safeParse(Object.fromEntries(formData.entries()));
-  if (data.success === false) {
-    console.log("error: ", data.error.errors);
-    return redirect("/posts");
-  }
+  const data = zodValidate(createPost, formData);
+  // if (data.success === false) {
+  //   console.log("error: ", data.error.errors);
+  //   throw new Error(data.error.errors.join());
+  // }
 
   const user = await getUser();
 
   try {
     const post = await db.post.create({
       data: {
-        ...data.data,
+        ...data,
         authorId: user.id,
       },
     });
@@ -48,11 +52,30 @@ const createPost$ = action(async (formData: FormData) => {
 
 export function TestForm() {
   return (
-    <form action={createPost$} method="post">
-      <label for="title">Title:</label>
-      <Input type="text" name="title" />
+    <ActionWrapper
+      action={createPostFn}
+      onError={(e) => {
+        console.log("error: ", e);
+        toast.error(`${e}`);
+      }}
+      onSuccess={() => {
+        console.log("success");
+        toast.success("Post created successfully");
+      }}
+    >
+      {({ isLoading, action }) => (
+        <form
+          onsubmit={(e) => {
+            e.preventDefault();
+            action(new FormData(e.currentTarget));
+          }}
+        >
+          <label for="title">Title:</label>
+          <Input type="text" name="title" />
 
-      <Button type="submit">submit</Button>
-    </form>
+          <Button type="submit">submit</Button>
+        </form>
+      )}
+    </ActionWrapper>
   );
 }

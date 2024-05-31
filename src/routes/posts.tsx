@@ -1,13 +1,9 @@
 import {
   RouteSectionProps,
-  action,
   createAsync,
-  redirect,
-  useAction,
-  useSearchParams,
   type RouteDefinition,
 } from "@solidjs/router";
-import { For, Show, Suspense, createMemo, createSignal } from "solid-js";
+import { For, Suspense, createSignal } from "solid-js";
 import {
   Table,
   TableBody,
@@ -17,74 +13,34 @@ import {
   TableHeader,
   TableRow,
 } from "~/components/ui/table";
-import {
-  Dialog,
-  DialogTrigger,
-  DialogContent,
-  DialogHeader,
-  DialogFooter,
-  DialogTitle,
-  DialogDescription,
-  DialogCloseButton,
-} from "~/components/ui/dialog";
-import {
-  Pagination,
-  PaginationEllipsis,
-  PaginationItem,
-  PaginationItems,
-  PaginationNext,
-  PaginationPrevious,
-} from "~/components/ui/pagination";
 
-// export const getPosts = cache(async () => {
-//   "use server";
-//   // const user = await getUser();
-
-//   // const posts = await db.post.findMany({
-//   //   orderBy: { createdAt: "desc" },
-//   //   include: { author: true },
-//   // });
-
-//   // return posts;
-// }, "posts");
-
-import { AddPostDialog } from "~/components/AddPostDialog";
 import { TestForm } from "~/components/TestForm";
-import { SuperFormDialog } from "~/components/SuperFormDialog";
-import { getPosts } from "~/lib/post/posts.server";
+import { Button } from "~/components/ui/button";
 import { Checkbox } from "~/components/ui/checkbox";
-import { Button, buttonVariants } from "~/components/ui/button";
-import { getUser } from "~/lib";
-import { db } from "~/lib/db";
-import ActionButton from "~/components/ActionButton";
-import DeletePostDialog from "~/components/domain/post/DeletePostDialog";
-import { count } from "console";
+import { AddPostDialog } from "~/domain/post/AddPostDialog";
+import DeletePostDialogV2 from "~/domain/post/DeletePostDialogV2";
+import { getPosts } from "~/domain/post/posts.server";
 import useASearchParams from "~/hooks/useASearchParams";
-import DeletePostDialogV2 from "~/components/domain/post/DeletePostDialogV2";
+import { SearchParams } from "~/lib/types/util";
+
+const initialSearchParams = (searchParams: SearchParams) => {
+  return {
+    page: searchParams.page ? parseInt(searchParams.page) : 1,
+    limit: searchParams.limit ? parseInt(searchParams.limit) : 10,
+    search: searchParams.search ? searchParams.search : "",
+  };
+};
 
 export const route = {
   load: (r) => {
-    const searchParams = r.params;
-    getPosts({
-      page: searchParams.page ? parseInt(searchParams.page) : 1,
-      limit: searchParams.limit ? parseInt(searchParams.limit) : 10,
-      search: searchParams.search ? searchParams.search : "",
-    });
+    getPosts(initialSearchParams(r.params));
   },
 } satisfies RouteDefinition;
 
 export default function Posts(props: RouteSectionProps) {
-  console.log("  props.params: ", props.params);
-
-  const [tableControls, setSearchParams] = useASearchParams({
-    init: (searchParams) => {
-      return {
-        page: searchParams.page ? parseInt(searchParams.page) : 1,
-        limit: searchParams.limit ? parseInt(searchParams.limit) : 10,
-        search: searchParams.search ? searchParams.search : "",
-      };
-    },
-  });
+  const [tableControls, setSearchParams] = useASearchParams((searchParams) =>
+    initialSearchParams(searchParams)
+  );
 
   const posts = createAsync(() => getPosts(tableControls()), {
     initialValue: {
@@ -165,7 +121,7 @@ export default function Posts(props: RouteSectionProps) {
       <div class="p-2 flex gap-2">
         <Button
           variant="secondary"
-          disabled={tableControls().page <= 0}
+          disabled={tableControls().page <= 1}
           onClick={() => {
             setSearchParams({ page: tableControls().page - 1 });
           }}

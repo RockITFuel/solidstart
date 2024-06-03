@@ -1,6 +1,8 @@
 import {
+  A,
   RouteSectionProps,
   createAsync,
+  useNavigate,
   type RouteDefinition,
 } from "@solidjs/router";
 import { For, Suspense, createSignal } from "solid-js";
@@ -41,6 +43,7 @@ export default function Posts(props: RouteSectionProps) {
   const [tableControls, setSearchParams] = useASearchParams((searchParams) =>
     initialSearchParams(searchParams)
   );
+  const goto = useNavigate();
 
   const posts = createAsync(() => getPosts(tableControls()), {
     initialValue: {
@@ -53,13 +56,14 @@ export default function Posts(props: RouteSectionProps) {
   const [value, setValue] = createSignal("");
 
   return (
-    <main class="w-full p-4 space-y-2">
+    <div class="w-full p-4 space-y-2">
       <div class="flex justify-between">
         <TestForm />
         <h2 class="font-bold text-3xl">Blogs</h2>
         <AddPostDialog />
         {/* <SuperFormDialog /> */}
       </div>
+
       <div class="flex gap-1">
         <input
           class="border rounded-md p-1"
@@ -104,7 +108,9 @@ export default function Posts(props: RouteSectionProps) {
             >
               {(post) => (
                 <TableRow>
-                  <TableCell class="">{post.title}</TableCell>
+                  <TableCell class="" onClick={() => goto(`${post.id}`)}>
+                    {post.title}
+                  </TableCell>
                   <TableCell class="">{post.content}</TableCell>
                   <TableCell class="">{post.author.username}</TableCell>
 
@@ -142,6 +148,6 @@ export default function Posts(props: RouteSectionProps) {
           Volgende
         </Button>
       </div>
-    </main>
+    </div>
   );
 }

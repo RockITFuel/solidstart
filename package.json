@@ -2,6 +2,7 @@
   "name": "example-with-prisma",
   "type": "module",
   "scripts": {
+    "predev": "bun run +scripts/scripts/remove_vinxi.ts",
     "dev": "vinxi dev",
     "build": "vinxi build",
     "start": "vinxi start"
@@ -16,7 +17,7 @@
     "@modular-forms/solid": "^0.20.0",
     "@prisma/client": "^5.12.1",
     "@solid-primitives/refs": "^1.0.8",
-    "@solidjs/router": "^0.13.3",
+    "@solidjs/router": "^0.13.5",
     "@solidjs/start": "^1.0.0",
     "autoprefixer": "^10.4.19",
     "chart.js": "^4.4.3",

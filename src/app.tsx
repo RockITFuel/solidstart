@@ -1,9 +1,15 @@
-import { RouteSectionProps, Router } from "@solidjs/router";
+import { RouteSectionProps } from "@solidjs/router";
+import { Router, Route } from "@solidjs/router";
+
 import { FileRoutes } from "@solidjs/start/router";
 import { JSX, Suspense } from "solid-js";
 import "./app.css";
 import { buttonVariants } from "./components/ui/button";
 import { Toaster, toast } from "solid-sonner";
+import PostsLayout from "./routes/posts/(post-layout)";
+import Posts from "./routes/posts/(posts)";
+import GTELayout from "./routes/gte/(gte-layout)";
+import { RouteButton } from "./components/RouteButton";
 
 export default function App() {
   return (
@@ -21,34 +27,18 @@ export default function App() {
               Login
             </RouteButton>
           </div>
-          <Toaster />
-
           <Suspense>{props.children}</Suspense>
         </div>
       )}
     >
+      <Toaster />
+      {/* <Route path="/gte" component={GTELayout}>
+        <Route path="/" component={Posts} />
+      </Route>
+      <Route path="/posts" component={PostsLayout}>
+        <Route path="/" component={Posts} />
+      </Route> */}
       <FileRoutes />
     </Router>
   );
 }
-
-export const RouteButton = ({
-  href,
-  children,
-  props,
-}: {
-  href: string;
-  children: JSX.Element;
-  props: RouteSectionProps<unknown>;
-}) => {
-  return (
-    <a
-      class={buttonVariants({
-        variant: props?.location?.pathname === href ? "default" : "outline",
-      })}
-      href={href}
-    >
-      {children}
-    </a>
-  );
-};

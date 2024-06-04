@@ -101,7 +101,7 @@ const DialogFooter: Component<ComponentProps<"div">> = (props) => {
   return (
     <div
       class={cn(
-        "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2",
+        "flex flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2 pt-4",
         props.class
       )}
       {...rest}
@@ -112,9 +112,7 @@ const DialogFooter: Component<ComponentProps<"div">> = (props) => {
 const DialogCloseButton: Component<ComponentProps<"div">> = (props) => {
   const [, rest] = splitProps(props, ["class"]);
   return (
-    <DialogPrimitive.CloseButton>
-      {props.children}
-    </DialogPrimitive.CloseButton>
+    <DialogPrimitive.CloseButton>{props.children}</DialogPrimitive.CloseButton>
   );
 };
 

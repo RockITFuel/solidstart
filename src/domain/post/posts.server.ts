@@ -10,6 +10,7 @@ import {
   useParams,
 } from "@solidjs/router";
 import z from "zod";
+import { zodValidate } from "~/lib/functions/validate";
 
 export const submitXX = async () => {
   "use server";
@@ -50,7 +51,7 @@ export const getPosts = cache(
       orderBy: { createdAt: "desc" },
       include: { author: true },
     });
-    console.log("last post: ", posts[0]?.title);
+    // console.log("last post: ", posts[0]?.title);
     const count = await db.post.count({
       where: {
         OR: [
@@ -64,6 +65,27 @@ export const getPosts = cache(
   },
   "posts"
 );
+const getPostSchema = z.object({
+  postId: z.string().uuid(),
+});
+export const getPost = cache(async (props: { postId: string }) => {
+  "use server";
+
+  const { postId } = zodValidate(getPostSchema, props);
+  // console.log(" res.data: ", res.data);
+
+  const user = await getUser();
+
+  const post = await db.post.findFirstOrThrow({
+    where: {
+      id: postId,
+    },
+    include: { author: true },
+  });
+  console.count(`last post: ${post.title} `);
+
+  return { post };
+}, "post");
 
 export const submitPost = action(async (data: FormData) => {
   "use server";

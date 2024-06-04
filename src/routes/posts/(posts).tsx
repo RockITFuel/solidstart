@@ -24,6 +24,7 @@ import DeletePostDialogV2 from "~/domain/post/DeletePostDialogV2";
 import { getPosts } from "~/domain/post/posts.server";
 import useASearchParams from "~/hooks/useASearchParams";
 import { SearchParams } from "~/lib/types/util";
+import { EditPostDialog } from "~/domain/post/EditPostDialog";
 
 const initialSearchParams = (searchParams: SearchParams) => {
   return {
@@ -114,9 +115,9 @@ export default function Posts(props: RouteSectionProps) {
                   <TableCell class="">{post.content}</TableCell>
                   <TableCell class="">{post.author.username}</TableCell>
 
-                  <TableCell class="">
+                  <TableCell class="flex gap-1">
                     <DeletePostDialogV2 postId={post.id} />
-                    {/* <DeletePostDialog postId={post.id} /> */}
+                    <EditPostDialog postId={post.id} />
                   </TableCell>
                 </TableRow>
               )}

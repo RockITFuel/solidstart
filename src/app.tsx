@@ -6,9 +6,7 @@ import { JSX, Suspense } from "solid-js";
 import "./app.css";
 import { buttonVariants } from "./components/ui/button";
 import { Toaster, toast } from "solid-sonner";
-import PostsLayout from "./routes/posts/(post-layout)";
-import Posts from "./routes/posts/(posts)";
-import GTELayout from "./routes/gte/(gte-layout)";
+
 import { RouteButton } from "./components/RouteButton";
 
 export default function App() {
@@ -22,6 +20,9 @@ export default function App() {
             </RouteButton>
             <RouteButton href="/posts" props={props}>
               Posts
+            </RouteButton>
+            <RouteButton href="/blogs" props={props}>
+              Blogs
             </RouteButton>
             <RouteButton href="/login" props={props}>
               Login

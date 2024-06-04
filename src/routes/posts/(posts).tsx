@@ -62,7 +62,6 @@ export default function Posts(props: RouteSectionProps) {
         <TestForm />
         <h2 class="font-bold text-3xl">Blogs</h2>
         <AddPostDialog />
-        {/* <SuperFormDialog /> */}
       </div>
 
       <div class="flex gap-1">

@@ -93,6 +93,7 @@ export function EditPostDialog(props: { postId: string }) {
   });
 
   return (
+    // Wrapped in suspense to prevent the form from being rendered before the data is fetched
     <Suspense>
       <Button variant="outline" onClick={() => setOpen(true)}>
         Edit
@@ -104,7 +105,6 @@ export function EditPostDialog(props: { postId: string }) {
             {({ isLoading, action }) => (
               <Form
                 onSubmit={(data) => {
-                  console.log("data: ", data);
                   data.postId = post()?.post.id!;
                   setOpen(false);
                   action(data);

@@ -29,10 +29,10 @@ export default function App() {
             </RouteButton>
           </div>
           <Suspense>{props.children}</Suspense>
+          <Toaster />
         </div>
       )}
     >
-      <Toaster />
       {/* <Route path="/gte" component={GTELayout}>
         <Route path="/" component={Posts} />
       </Route>
